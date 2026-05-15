@@ -42,11 +42,12 @@ export default function StudentDashboard() {
   }
 
   async function joinClass(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     try {
       await api("/enrollments/join", { method: "POST", token, body: { classCode } });
       setClassCode("");
       await load();
+      navigate("/student/dashboard", { replace: true });
     } catch (err) {
       setError(err.message);
     }
@@ -59,18 +60,24 @@ export default function StudentDashboard() {
   const joinSidebarForm = (
     <div className="card compact" style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', padding: '20px 16px' }}>
       <h4 style={{ margin: '0 0 12px', fontSize: '14px', color: '#0f172a' }}>Join a Class</h4>
-      <form onSubmit={joinClass} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <input
           placeholder="Class Code"
           value={classCode}
           onChange={(e) => setClassCode(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') joinClass(e); }}
           required
           style={{ minHeight: '36px', fontSize: '13px', padding: '0 12px' }}
         />
-        <button className="btn btn-primary" type="submit" style={{ minHeight: '36px', fontSize: '13px' }}>
+        <button 
+          className="btn btn-primary" 
+          type="button" 
+          onClick={joinClass} 
+          style={{ minHeight: '36px', fontSize: '13px' }}
+        >
           Join
         </button>
-      </form>
+      </div>
     </div>
   );
 

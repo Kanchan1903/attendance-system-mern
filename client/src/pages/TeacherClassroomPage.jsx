@@ -71,6 +71,8 @@ export default function TeacherClassroomPage() {
       setPrn("");
       setEmail("");
       setShowAddStudentModal(false);
+      setNotice("Student added successfully");
+      setTimeout(() => setNotice(""), 3000);
       await load();
     } catch (err) {
       setError(err.message);
@@ -133,8 +135,8 @@ export default function TeacherClassroomPage() {
       if (!res.ok) throw new Error(data?.error || data?.details || "Upload failed");
       setCsvFile(null);
       setShowCsvModal(false);
-      setNotice(`CSV uploaded: ${data?.added || 0} added, ${data?.skipped || 0} skipped.`);
-      window.alert("students added successfully");
+      setNotice(`Students added successfully! CSV uploaded: ${data?.added || 0} added, ${data?.skipped || 0} skipped.`);
+      setTimeout(() => setNotice(""), 5000);
       await load();
       safeResetForm(formEl);
     } catch (err) {
