@@ -6,6 +6,7 @@ const enrollmentRoutes = require("./enrollmentRoutes");
 const studentRoutes = require("./studentRoutes");
 const semesterReportRoutes = require("./semesterReportRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
+const iotRoutes = require("./iotRoutes");
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.use("/enrollments", enrollmentRoutes);
 router.use("/student", studentRoutes);
 router.use("/semester-report", semesterReportRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/iot", iotRoutes);
 
 module.exports = router;
 

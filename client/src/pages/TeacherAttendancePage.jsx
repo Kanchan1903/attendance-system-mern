@@ -17,6 +17,7 @@ export default function TeacherAttendancePage() {
   const [rows, setRows] = useState([]);
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [iotActive, setIotActive] = useState(false);
 
   useEffect(() => {
     if (!token || user?.role !== "teacher") {
@@ -24,8 +25,55 @@ export default function TeacherAttendancePage() {
       return;
     }
     load();
+    checkIotSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, classroomId]);
+
+  useEffect(() => {
+    let interval;
+    if (iotActive) {
+      interval = setInterval(() => {
+        load();
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [iotActive, date, timeslot, token, classroomId]);
+
+  async function checkIotSession() {
+    try {
+      const data = await api(`/iot/session/${classroomId}`, { token });
+      setIotActive(data.active);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function startIot() {
+    try {
+      await api(`/iot/session/start`, {
+        method: "POST",
+        token,
+        body: { classroomId, date, timeslot },
+      });
+      setIotActive(true);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function stopIot() {
+    try {
+      await api(`/iot/session/stop/${classroomId}`, {
+        method: "POST",
+        token,
+      });
+      setIotActive(false);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
 
   async function load() {
     try {
@@ -138,6 +186,25 @@ export default function TeacherAttendancePage() {
           <button className="btn btn-primary btn-consistent" type="button" onClick={fillRemainingAbsent}>
             Fill Others Absent
           </button>
+        </div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 12 }}>
+        <div className="card-body row" style={{ alignItems: "center" }}>
+          {!iotActive ? (
+            <button className="btn btn-primary" type="button" onClick={startIot}>
+              Start IoT Attendance
+            </button>
+          ) : (
+            <>
+              <button className="btn" type="button" onClick={stopIot} style={{ backgroundColor: "#dc3545", color: "white" }}>
+                Stop IoT Attendance
+              </button>
+              <span style={{ marginLeft: 16, color: "#28a745", fontWeight: "bold" }}>
+                🔴 IoT Session Active (Polling...)
+              </span>
+            </>
+          )}
         </div>
       </div>
 

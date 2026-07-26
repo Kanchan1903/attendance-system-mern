@@ -15,7 +15,8 @@ function createApp() {
   app.use(express.json({ limit: "2mb" }));
 
   const uploadDir = process.env.UPLOAD_DIR || "uploads";
-  app.use("/uploads", express.static(path.join(process.cwd(), uploadDir)));
+  const uploadPath = process.env.VERCEL ? "/tmp" : path.join(process.cwd(), uploadDir);
+  app.use("/uploads", express.static(uploadPath));
 
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true });
