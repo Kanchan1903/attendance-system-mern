@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
   } catch (err) {
     // eslint-disable-next-line no-console
     console.error("Serverless API execution error:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    const details = err ? (err.message || String(err)) : "Unknown error";
+    return res.status(500).json({ error: `Database connection failure: ${details}` });
   }
 };
